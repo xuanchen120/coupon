@@ -1,8 +1,8 @@
 {
     "name": "xuanchen/coupon",
-    "description": "卡券相关",
+    "description": "卡券核销相关",
     "license": "MIT",
-    "homepage": "https://gitee.com/xdeepu/coupon",
+    "homepage": "https://github.com/xuanchen120/coupon.git",
     "authors": [
         {
             "name": "玄尘",
@@ -14,7 +14,7 @@
         "laravel/framework": "*"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "XuanChen\\Coupon\\": "src/"
         }
     },
