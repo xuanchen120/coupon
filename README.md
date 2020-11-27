@@ -3,6 +3,6 @@
 
 
 ### 发券地址：http://pac.ysd-bs.com/api/V1/user/grant
-### 查询接口：http://pa.ysd-bs.com/api/V1/user/query
-### 核销地址：http://pa.ysd-bs.com/api/V1/user/freezecoupon
-### 作废地址：http://pa.ysd-bs.com/api/V1/user/destroy
+### 查询接口：http://pac.ysd-bs.com/api/V1/user/query
+### 核销地址：http://pac.ysd-bs.com/api/V1/user/freezecoupon
+### 作废地址：http://pac.ysd-bs.com/api/V1/user/destroy
