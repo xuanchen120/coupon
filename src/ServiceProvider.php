@@ -15,6 +15,7 @@ class ServiceProvider extends LaravelServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/xuanchen_coupon.php' => config_path('xuanchen_coupon.php')]);
+            $this->publishes([__DIR__ . '/../config/pingan.php' => config_path('pingan.php')]);
         }
     }
 
@@ -25,6 +26,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/xuanchen_coupon.php', 'xuanchen_coupon');
+        $this->mergeConfigFrom(__DIR__ . '/../config/pingan.php', 'pingan');
 
     }
 
