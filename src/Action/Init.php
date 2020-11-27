@@ -1,0 +1,197 @@
+<?php
+
+namespace XuanChen\Coupon\Action;
+
+use App\Models\Coupon;
+use App\Models\Log as LogModel;
+
+class Init
+{
+
+    //渠道
+    public $user;
+
+    //卡券编号
+    public $redemptionCode;
+
+    //订单金额
+    public $total;
+
+    //网点编号
+    public $outletId;
+
+    //活动id
+    public $activityId;
+
+    //手机号
+    public $mobile;
+
+    //核销的卡券 创建的核销记录
+    public $coupon;
+
+    //查询返回卡券信息
+    public $query_coupon;
+
+    //订单id
+    public $orderid;
+
+    //查询到的卡券规则和商品id 只有平安券才有
+    public $queryData;
+
+    //设置渠道
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    //设置渠道
+    public function setOrderId($orderid)
+    {
+        $this->orderid = $orderid;
+
+        return $this;
+    }
+
+    //设置核销码
+    public function setCode($redemptionCode)
+    {
+        $this->redemptionCode = $redemptionCode;
+
+        return $this;
+
+    }
+
+    //设置订单总额
+    public function setTotal($total)
+    {
+        $this->total = $total;
+
+        return $this;
+
+    }
+
+    //设置网点id
+    public function setOutletId($outletId)
+    {
+        $this->outletId = $outletId;
+
+        return $this;
+
+    }
+
+    //设置活动id
+    public function setActivityId($activityId)
+    {
+        $this->activityId = $activityId;
+
+        return $this;
+
+    }
+
+    //设置手机号
+    public function setMobile($mobile)
+    {
+        $this->mobile = $mobile;
+
+        return $this;
+
+    }
+
+    /**
+     * Notes: 插入日志
+     * @Author: 玄尘
+     * @Date  : 2020/6/30 10:29
+     * @param        $url
+     * @param        $method
+     * @param        $params
+     * @param string $type
+     * @return mixed
+     */
+    public function createLog($url, $method, $params, $type = 'pingan')
+    {
+        $data = [
+            'path'      => $url,
+            'method'    => $method,
+            'type'      => $type,
+            'in_source' => $params,
+        ];
+
+        $info = LogModel::create($data);
+
+        return $info;
+    }
+
+    /**
+     * Notes: 更新日志
+     * @Author: 玄尘
+     * @Date  : 2020/6/30 10:29
+     * @param $log
+     * @param $params
+     */
+    public static function updateLog($log, $params)
+    {
+        $log->out_source = $params;
+        $log->save();
+    }
+
+    //统一门店 相同金额 3分钟之内看作是一笔订单
+    public function CheckCount()
+    {
+        if ($this->queryData) {
+            if (isset($this->queryData['thirdPartyGoodsId']) && $this->queryData['thirdPartyGoodsId'] == 'YSD-full0-0') {
+                return true;
+            }
+        }
+
+        if ($this->orderid) {
+            $check_count = Coupon::where('orderid', $this->orderid)
+                ->where('outletId', $this->outletId)
+                ->where('total', $this->total)
+                ->where('status', 2)
+                ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
+                ->count();
+        } else {
+            $check_count = Coupon::where('outletId', $this->outletId)
+                ->where('total', $this->total)
+                ->where('status', 2)
+                ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
+                ->count();
+        }
+
+        $count = floor($this->total / 100);
+
+        if ($check_count > 0) {
+//            if ($this->total < 100) {
+            //                return '核销失败，订单金额少于100只能核销一张优惠券。';
+            //            }
+            if ($check_count >= $count) {
+                return "核销失败，此订单您只能使用 {$count} 张优惠券";
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Notes: 校验是否已经核销过
+     * @Author: 玄尘
+     * @Date  : 2020/8/8 13:43
+     */
+    public function HasCheck()
+    {
+        $info = Coupon::where('redemptionCode', $this->redemptionCode)
+            ->where('outletId', $this->outletId)
+            ->where('total', $this->total)
+            ->where('status', 2)
+            ->first();
+        if ($info) {
+            return '核销失败，此优惠券已被使用';
+        }
+
+        return false;
+
+    }
+
+}
