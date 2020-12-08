@@ -22,6 +22,7 @@ class PinganAction extends Init implements CouponContracts
                                  ->setOutletId($this->outletId)
                                  ->setTotal($this->total)
                                  ->setOrderId($this->orderid)
+                                 ->setFrom($this->from)
                                  ->start();
     }
 

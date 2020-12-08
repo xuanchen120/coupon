@@ -70,6 +70,7 @@ class Coupon
             return $model->setCode($redemptionCode)
                          ->setOutletId($outletId)
                          ->destroy();
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -126,11 +127,18 @@ class Coupon
      * @param float            $total          订单金额
      * @param string           $outletId       网点id
      * @param string           $orderid        订单id
+     * @param string           $from           来源
      * @return string
      */
-    public static function Redemption(User $user, string $redemptionCode, float $total, string $outletId, string $orderid = '')
+    public static function Redemption(
+        User $user,
+        string $redemptionCode,
+        float $total,
+        string $outletId,
+        string $orderid = '',
+        string $from = ''
+    )
     {
-
         try {
             $model = self::getModelByCode($redemptionCode);
             if (is_string($model)) {
@@ -142,9 +150,11 @@ class Coupon
                          ->setTotal($total)
                          ->setOutletId($outletId)
                          ->setOrderId($orderid)
+                         ->setFrom($from)
                          ->start();
 
-        } catch (\Exception $e) {
+        } catch
+        (\Exception $e) {
             return $e->getMessage();
         }
 

@@ -38,6 +38,9 @@ class Init
     //查询到的卡券规则和商品id 只有平安券才有
     public $queryData;
 
+    //来源
+    public $from;
+
     //设置渠道
     public function setUser($user)
     {
@@ -99,6 +102,15 @@ class Init
 
     }
 
+    //设置来源
+    public function setFrom($from)
+    {
+        $this->from = $from;
+
+        return $this;
+
+    }
+
     /**
      * Notes: 插入日志
      * @Author: 玄尘
@@ -139,6 +151,11 @@ class Init
     //统一门店 相同金额 3分钟之内看作是一笔订单
     public function CheckCount()
     {
+        //排除来源
+        if (!empty($this->from) && in_array($this->from, config('xuanchen_coupon.froms'))) {
+            return true;
+        }
+
         if ($this->queryData) {
             if (isset($this->queryData['thirdPartyGoodsId']) && $this->queryData['thirdPartyGoodsId'] == 'YSD-full0-0') {
                 return true;
@@ -147,23 +164,23 @@ class Init
 
         if ($this->orderid) {
             $check_count = Coupon::where('orderid', $this->orderid)
-                ->where('outletId', $this->outletId)
-                ->where('total', $this->total)
-                ->where('status', 2)
-                ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
-                ->count();
+                                 ->where('outletId', $this->outletId)
+                                 ->where('total', $this->total)
+                                 ->where('status', 2)
+                                 ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
+                                 ->count();
         } else {
             $check_count = Coupon::where('outletId', $this->outletId)
-                ->where('total', $this->total)
-                ->where('status', 2)
-                ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
-                ->count();
+                                 ->where('total', $this->total)
+                                 ->where('status', 2)
+                                 ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
+                                 ->count();
         }
 
         $count = floor($this->total / 100);
 
         if ($check_count > 0) {
-//            if ($this->total < 100) {
+            //            if ($this->total < 100) {
             //                return '核销失败，订单金额少于100只能核销一张优惠券。';
             //            }
             if ($check_count >= $count) {
@@ -182,10 +199,10 @@ class Init
     public function HasCheck()
     {
         $info = Coupon::where('redemptionCode', $this->redemptionCode)
-            ->where('outletId', $this->outletId)
-            ->where('total', $this->total)
-            ->where('status', 2)
-            ->first();
+                      ->where('outletId', $this->outletId)
+                      ->where('total', $this->total)
+                      ->where('status', 2)
+                      ->first();
         if ($info) {
             return '核销失败，此优惠券已被使用';
         }
