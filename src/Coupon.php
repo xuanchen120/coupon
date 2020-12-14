@@ -122,12 +122,12 @@ class Coupon
      * Notes: description
      * @Author: 玄尘
      * @Date  : 2020/8/21 13:33
-     * @param \App\Models\User $user           渠道
-     * @param string           $redemptionCode 要核销的券码
-     * @param float            $total          订单金额
-     * @param string           $outletId       网点id
-     * @param string           $orderid        订单id
-     * @param string           $from           来源
+     * @param  \App\Models\User  $user            渠道
+     * @param  string            $redemptionCode  要核销的券码
+     * @param  float             $total           订单金额
+     * @param  string            $outletId        网点id
+     * @param  string            $orderid         订单id
+     * @param  string            $from            来源
      * @return string
      */
     public static function Redemption(
@@ -137,8 +137,7 @@ class Coupon
         string $outletId,
         string $orderid = '',
         string $from = ''
-    )
-    {
+    ) {
         try {
             $model = self::getModelByCode($redemptionCode);
             if (is_string($model)) {
@@ -153,8 +152,7 @@ class Coupon
                          ->setFrom($from)
                          ->start();
 
-        } catch
-        (\Exception $e) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
 
