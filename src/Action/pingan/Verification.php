@@ -21,8 +21,9 @@ class Verification extends PingAnInit
 
         //查询卡券信息
         $this->query_coupon = (new Query)->setOutletId($this->outletId)
-            ->setCode($this->redemptionCode)
-            ->start();
+                                         ->setCode($this->redemptionCode)
+                                         ->start();
+
         if (is_string($this->query_coupon)) {
             return $this->query_coupon;
         }
@@ -119,6 +120,7 @@ class Verification extends PingAnInit
                 'productId'         => $this->queryData['productId'],
                 'thirdPartyGoodsId' => $this->queryData['thirdPartyGoodsId'],
                 'couponName'        => $this->query_coupon['couponName'],
+                'full'              => $this->ticket['full'],
                 'price'             => $this->ticket['price'],
                 'total'             => $this->total,
                 'profit'            => $this->ticket['profit'],
@@ -210,7 +212,7 @@ class Verification extends PingAnInit
         }
 
         $this->ticket = [
-            'total'  => $result[0],
+            'full'   => $result[0],
             'price'  => $price,
             'profit' => $code->profit,
         ];

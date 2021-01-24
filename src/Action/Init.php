@@ -115,10 +115,10 @@ class Init
      * Notes: 插入日志
      * @Author: 玄尘
      * @Date  : 2020/6/30 10:29
-     * @param        $url
-     * @param        $method
-     * @param        $params
-     * @param string $type
+     * @param          $url
+     * @param          $method
+     * @param          $params
+     * @param  string  $type
      * @return mixed
      */
     public function createLog($url, $method, $params, $type = 'pingan')
@@ -162,31 +162,44 @@ class Init
             }
         }
 
+        //已核销的券的满多少金额
         if ($this->orderid) {
             $check_count = Coupon::where('orderid', $this->orderid)
                                  ->where('outletId', $this->outletId)
                                  ->where('total', $this->total)
                                  ->where('status', 2)
                                  ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
-                                 ->count();
+                                 ->sum('full');
         } else {
             $check_count = Coupon::where('outletId', $this->outletId)
                                  ->where('total', $this->total)
                                  ->where('status', 2)
                                  ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
-                                 ->count();
+                                 ->sum('full');
         }
 
-        $count = floor($this->total / 100);
-
-        if ($check_count > 0) {
-            //            if ($this->total < 100) {
-            //                return '核销失败，订单金额少于100只能核销一张优惠券。';
-            //            }
-            if ($check_count >= $count) {
-                return "核销失败，此订单您只能使用 {$count} 张优惠券";
-            }
+        //金额判断
+        if ($check_count >= $this->total) {
+            return "核销失败，此订单您无法再使用优惠券";
         }
+
+        //取差值
+        $diff = bcsub($this->total, $check_count);
+
+        if ($diff < $this->ticket['full']) {
+            return "核销失败，此订单您无法再使用优惠券";
+        }
+
+        //        $count = floor($this->total / 100);
+        //
+        //        if ($check_count > 0) {
+        //            //            if ($this->total < 100) {
+        //            //                return '核销失败，订单金额少于100只能核销一张优惠券。';
+        //            //            }
+        //            if ($check_count >= $count) {
+        //                return "核销失败，此订单您只能使用 {$count} 张优惠券";
+        //            }
+        //        }
 
         return true;
     }

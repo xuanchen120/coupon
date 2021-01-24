@@ -36,18 +36,18 @@ class YsdVerification extends Init
             return $this->query_coupon;
         }
 
+        //校验卡券
+        $ticket = $this->checkCoupon();
+        if (!is_array($ticket)) {
+            return $ticket;
+        }
+
         //检查可核销次数，100元为1次。
         if ($this->query_coupon->activity && $this->query_coupon->activity->need_check) {
             $ret = $this->CheckCount();
             if ($ret !== true) {
                 return $ret;
             }
-        }
-
-        //校验卡券
-        $ticket = $this->checkCoupon();
-        if (!is_array($ticket)) {
-            return $ticket;
         }
 
         //增加核销记录
@@ -144,7 +144,7 @@ class YsdVerification extends Init
         }
 
         return $this->ticket = [
-            'total'  => $match[0],
+            'full'   => $match[0],
             'price'  => $price,
             'profit' => $code->profit,
         ];
@@ -171,6 +171,7 @@ class YsdVerification extends Init
                 'redemptionCode'    => $this->redemptionCode,
                 'thirdPartyGoodsId' => $this->query_coupon->activity->rule->code,
                 'couponName'        => $this->query_coupon->activity->title,
+                'full'              => $this->ticket['full'],
                 'price'             => $this->ticket['price'],
                 'total'             => $this->total,
                 'profit'            => $this->ticket['profit'],
