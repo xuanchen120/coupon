@@ -3,6 +3,7 @@
 namespace XuanChen\Coupon;
 
 use App\Models\User;
+use XuanChen\UnionPay\Models\UnionpayCoupon;
 
 /**
  * 自有卡券系统
@@ -139,6 +140,12 @@ class Coupon
         string $from = ''
     ) {
         try {
+
+            $is_unionpay = UnionpayCoupon::where('coupon_no', $redemptionCode)->exists();
+            if ($is_unionpay) {
+                return "核销失败，无次优惠券核销权限";
+            }
+
             $model = self::getModelByCode($redemptionCode);
             if (is_string($model)) {
                 return $model;
