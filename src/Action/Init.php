@@ -170,10 +170,10 @@ class Init
                                  ->sum('full');
 
             //获取第一次的核销请求
-            $last = Coupon::where('orderid', $this->orderid)->latest('id')->first();
+            $first = Coupon::where('orderid', $this->orderid)->orderBy('id', 'asc')->first();
             //如果两次的金额不对，把金额设置为第一次的金额
-            if ($last && $last->total != $this->total) {
-                $this->total = $last->total;
+            if ($first && $first->total != $this->total) {
+                $this->total = $first->total;
             }
         } else {
             $check_count = Coupon::where('outletId', $this->outletId)
