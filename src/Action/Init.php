@@ -2,8 +2,10 @@
 
 namespace XuanChen\Coupon\Action;
 
+use App\Models\Activity;
 use App\Models\Coupon;
 use App\Models\Log as LogModel;
+use App\Models\User;
 
 class Init
 {
@@ -195,17 +197,6 @@ class Init
             return "核销失败，此订单您无法再使用优惠券";
         }
 
-        //        $count = floor($this->total / 100);
-        //
-        //        if ($check_count > 0) {
-        //            //            if ($this->total < 100) {
-        //            //                return '核销失败，订单金额少于100只能核销一张优惠券。';
-        //            //            }
-        //            if ($check_count >= $count) {
-        //                return "核销失败，此订单您只能使用 {$count} 张优惠券";
-        //            }
-        //        }
-
         return true;
     }
 
@@ -214,7 +205,7 @@ class Init
      * @Author: 玄尘
      * @Date  : 2020/8/8 13:43
      */
-    public function HasCheck()
+    public function hasVerify()
     {
         $info = Coupon::where('redemptionCode', $this->redemptionCode)
                       ->where('outletId', $this->outletId)
@@ -226,6 +217,34 @@ class Init
         }
 
         return false;
+
+    }
+
+    /**
+     * Notes: 校验网点
+     * @Author: 玄尘
+     * @Date  : 2021/4/25 15:46
+     */
+    public function verify_shop()
+    {
+        $activity = $this->query_coupon->activity;
+        if (!$activity) {
+            return "未找到活动";
+        }
+
+        if ($activity->verify_shop == Activity::VERIFY_SHOP_YES) {
+            $shop = User::where('outlet_id', $this->outletId)->first();
+
+            if (empty($shop)) {
+                return '操作失败,未查询到此网点信息。';
+            }
+
+            if (!in_array($shop->id, $activity->shops()->pluck('user_id')->toArray())) {
+                return '操作失败,此网点没有权限';
+            }
+        }
+
+        return true;
 
     }
 

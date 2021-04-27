@@ -14,7 +14,7 @@ class Verification extends PingAnInit
     public function start()
     {
         //检查是否已经核销过
-        $res = $this->HasCheck();
+        $res = $this->hasVerify();
         if ($res !== false) {
             return $res;
         }
@@ -91,7 +91,7 @@ class Verification extends PingAnInit
 
             return $resdata;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $coupon->status = 3;
             $coupon->remark = '核销失败 ' . $e->getMessage();
             $coupon->save();
@@ -131,7 +131,7 @@ class Verification extends PingAnInit
 
             return $coupon = Coupon::create($couponData);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
 

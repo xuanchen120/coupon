@@ -46,9 +46,12 @@ return [
         7 => '未激活',
     ],
 
-    'froms' => [
+    'froms'       => [
         'bsshop',//本时商城
         'bslive',//本时生活
     ],
+
+    //券码长度 15 或 17
+    'code_length' => 15,
 
 ];

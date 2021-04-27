@@ -22,7 +22,7 @@ class YsdVerification extends Init
     public function start()
     {
         //检查是否已经核销过
-        $res = $this->HasCheck();
+        $res = $this->hasVerify();
         if ($res !== false) {
             return $res;
         }
@@ -34,6 +34,12 @@ class YsdVerification extends Init
 
         if (is_string($this->query_coupon)) {
             return $this->query_coupon;
+        }
+
+        //检查网点是否有权限
+        $res = $this->verify_shop();
+        if ($res !== true) {
+            return $res;
         }
 
         //校验卡券
@@ -79,7 +85,7 @@ class YsdVerification extends Init
             event(new ConponCallback($this->query_coupon));
 
             return $resdata;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
 
             $this->coupon->status = 3;
@@ -185,7 +191,7 @@ class YsdVerification extends Init
             DB::commit();
 
             return $this->coupon;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
 
             return $e->getMessage();
