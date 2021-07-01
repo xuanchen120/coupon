@@ -9,11 +9,11 @@ return [
      * 测试环境参数
      */
     'test'          => [
-        'client_id'     => 'P_YISHIDAI',
+        'client_id'     => env('PINGAN_TEST_CLIENT_ID', ''),
         'grant_type'    => 'client_credentials',
-        'client_secret' => 'zGg9e6J5',
-        'userName'      => '18804518018',
-        'AES_CODE'      => '61DA0376BEBCFE1F',
+        'client_secret' => env('PINGAN_TEST_CLIENT_SECRET', ''),
+        'userName'      => env('PINGAN_TEST_USERNAME', ''),
+        'AES_CODE'      => env('PINGAN_TEST_AES_CODE', ''),
         'tokenUri'      => 'https://test-api.pingan.com.cn:20443/oauth/oauth2/access_token',
         'Uri'           => 'http://test-api.pingan.com.cn:20080/open/vassPartner/appsvr/property/api/new/',
     ],
@@ -22,11 +22,11 @@ return [
      * 生产环境参数
      */
     'dev'           => [
-        'client_id'     => 'P_YISHIDAI',
+        'client_id'     => env('PINGAN_DEV_CLIENT_ID', ''),
         'grant_type'    => 'client_credentials',
-        'client_secret' => 'F3j5J7bx',
-        'userName'      => '13936166646',
-        'AES_CODE'      => '108DD27AB83252DB',
+        'client_secret' => env('PINGAN_DEV_CLIENT_SECRET', ''),
+        'userName'      => env('PINGAN_DEV_USERNAME', ''),
+        'AES_CODE'      => env('PINGAN_DEV_AES_CODE', ''),
         'tokenUri'      => 'http://api.pingan.com.cn/oauth/oauth2/access_token',
         'Uri'           => 'http://api.pingan.com.cn/open/vassPartner/appsvr/property/api/new/',
     ],
