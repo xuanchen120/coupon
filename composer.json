@@ -1,0 +1,28 @@
+{
+    "name": "xuanchen/coupon",
+    "description": "卡券核销相关",
+    "license": "MIT",
+    "homepage": "https://github.com/xuanchen120/coupon.git",
+    "authors": [
+        {
+            "name": "玄尘",
+            "email": "122383162@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "laravel/framework": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "XuanChen\\Coupon\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "XuanChen\\Coupon\\ServiceProvider"
+            ]
+        }
+    }
+}
