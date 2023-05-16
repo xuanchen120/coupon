@@ -261,7 +261,7 @@ class Init
     public function verify_day()
     {
         $activity = $this->query_coupon->activity;
-        if ($activity->day_times > 0) {
+        if (isset($activity->day_times) && $activity->day_times > 0) {
             $day_times = $activity->day_times;
             $count     = Coupon::query()
                 ->whereHas('activityCoupon', function ($q) use ($activity) {
