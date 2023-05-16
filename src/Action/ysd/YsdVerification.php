@@ -43,6 +43,12 @@ class YsdVerification extends Init
             return $res;
         }
 
+        //当日可用券检查
+        $res = $this->verify_day();
+        if ($res !== true) {
+            return $res;
+        }
+
         //校验卡券
         $ticket = $this->checkCoupon();
         if (! is_array($ticket)) {

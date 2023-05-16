@@ -115,6 +115,7 @@ class Init
 
     /**
      * Notes: 插入日志
+     *
      * @Author: 玄尘
      * @Date  : 2020/6/30 10:29
      * @param          $url
@@ -139,6 +140,7 @@ class Init
 
     /**
      * Notes: 更新日志
+     *
      * @Author: 玄尘
      * @Date  : 2020/6/30 10:29
      * @param $log
@@ -154,7 +156,7 @@ class Init
     public function CheckCount()
     {
         //排除来源
-        if (!empty($this->from) && in_array($this->from, config('xuanchen_coupon.froms'))) {
+        if (! empty($this->from) && in_array($this->from, config('xuanchen_coupon.froms'))) {
             return true;
         }
 
@@ -167,9 +169,9 @@ class Init
         //已核销的券的满多少金额
         if ($this->orderid) {
             $check_count = Coupon::where('orderid', $this->orderid)
-                                 ->where('outletId', $this->outletId)
-                                 ->where('status', 2)
-                                 ->sum('full');
+                ->where('outletId', $this->outletId)
+                ->where('status', 2)
+                ->sum('full');
 
             //获取第一次的核销请求
             $first = Coupon::where('orderid', $this->orderid)->orderBy('id', 'asc')->first();
@@ -179,10 +181,10 @@ class Init
             }
         } else {
             $check_count = Coupon::where('outletId', $this->outletId)
-                                 ->where('total', $this->total)
-                                 ->where('status', 2)
-                                 ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
-                                 ->sum('full');
+                ->where('total', $this->total)
+                ->where('status', 2)
+                ->where('created_at', '>=', now()->subMinutes(3)->format('Y-m-d H:i:s'))
+                ->sum('full');
         }
 
         //金额判断
@@ -202,16 +204,17 @@ class Init
 
     /**
      * Notes: 校验是否已经核销过
+     *
      * @Author: 玄尘
      * @Date  : 2020/8/8 13:43
      */
     public function hasVerify()
     {
         $info = Coupon::where('redemptionCode', $this->redemptionCode)
-                      ->where('outletId', $this->outletId)
-                      ->where('total', $this->total)
-                      ->where('status', 2)
-                      ->first();
+            ->where('outletId', $this->outletId)
+            ->where('total', $this->total)
+            ->where('status', 2)
+            ->first();
         if ($info) {
             return '核销失败，此优惠券已被使用';
         }
@@ -222,13 +225,14 @@ class Init
 
     /**
      * Notes: 校验网点
+     *
      * @Author: 玄尘
      * @Date  : 2021/4/25 15:46
      */
     public function verify_shop()
     {
         $activity = $this->query_coupon->activity;
-        if (!$activity) {
+        if (! $activity) {
             return "未找到活动";
         }
 
@@ -239,13 +243,38 @@ class Init
                 return '操作失败,未查询到此网点信息。';
             }
 
-            if (!in_array($shop->id, $activity->shops()->pluck('user_id')->toArray())) {
+            if (! in_array($shop->id, $activity->shops()->pluck('user_id')->toArray())) {
                 return '操作失败,此网点没有权限';
             }
         }
 
         return true;
 
+    }
+
+    /**
+     * Notes: 检查当天可用次数
+     *
+     * @Author: 玄尘
+     * @Date: 2023/5/15 9:18
+     */
+    public function verify_day()
+    {
+        $activity = $this->query_coupon->activity;
+        if ($activity->day_times > 0) {
+            $day_times = $activity->day_times;
+            $count     = Coupon::query()
+                ->whereHas('activityCoupon', function ($q) use ($activity) {
+                    $q->where('activity_id', $activity->id)->where('mobile', $this->query_coupon->mobile);
+                })
+                ->count();
+
+            if ($count >= $day_times) {
+                return '核销失败，此类券每天只可使用'.$day_times.'张';
+            }
+        }
+
+        return true;
     }
 
 }
