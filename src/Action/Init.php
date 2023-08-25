@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\Coupon;
 use App\Models\Log as LogModel;
 use App\Models\User;
+use Carbon\Carbon;
 
 class Init
 {
@@ -65,7 +66,6 @@ class Init
         $this->redemptionCode = $redemptionCode;
 
         return $this;
-
     }
 
     //设置订单总额
@@ -74,7 +74,6 @@ class Init
         $this->total = $total;
 
         return $this;
-
     }
 
     //设置网点id
@@ -83,7 +82,6 @@ class Init
         $this->outletId = $outletId;
 
         return $this;
-
     }
 
     //设置活动id
@@ -92,7 +90,6 @@ class Init
         $this->activityId = $activityId;
 
         return $this;
-
     }
 
     //设置手机号
@@ -101,7 +98,6 @@ class Init
         $this->mobile = $mobile;
 
         return $this;
-
     }
 
     //设置来源
@@ -110,7 +106,6 @@ class Init
         $this->from = $from;
 
         return $this;
-
     }
 
     /**
@@ -220,7 +215,6 @@ class Init
         }
 
         return false;
-
     }
 
     /**
@@ -249,7 +243,6 @@ class Init
         }
 
         return true;
-
     }
 
     /**
@@ -267,6 +260,7 @@ class Init
                 ->whereHas('activityCoupon', function ($q) use ($activity) {
                     $q->where('activity_id', $activity->id)->where('mobile', $this->query_coupon->mobile);
                 })
+                ->whereDate('created_at', Carbon::today())
                 ->count();
 
             if ($count >= $day_times) {
